@@ -38,7 +38,7 @@ A szkript a következő Linux disztribúciókon történő Wine és OpenJDK tele
    * *KDE Desktop 2025.07.01 (Tesztelt)*
 * **Fedora Linux**
    * *KDE Desktop 42-1.1 (Tesztelt)*
-        * Telepítés után automatikusan frissítettem a `sudo dnf upgrade` parancssal
+        * Az alap Red Hat verzióval frissítés után sem működik, Oracle jdk 21-el viszont igen, https://www.oracle.com/java/technologies/downloads/#java21
 * **Debian/Ubuntu**
     * *Ubuntu Desktop 12.11.0 (Tesztelt)*
     * *Linux Mint Cinnamon 22.1 (Tesztelt)*

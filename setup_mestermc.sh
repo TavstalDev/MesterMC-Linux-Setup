@@ -31,10 +31,10 @@ else
         sudo dpkg --add-architecture i386
         sudo mkdir -pm755 /etc/apt/keyrings
         sudo apt update
-        sudo apt install wine -y
+        sudo apt install wine wine32 wine64 -y
         sudo apt install winetricks -y
         sudo apt install winbind -y
-        winecfg
+        #winecfg
     elif command_exists dnf; then
         # Fedora
         echo "Észlelt disztribúció: Fedora. Wine telepítése..."
@@ -43,11 +43,13 @@ else
             echo "Nem sikerült észlelni a Fedora verzióját. Kérjük, szükség esetén frissítse a '39' értéket a szkriptben."
             FEDORA_VERSION="39" # Alapértelmezett: 39, ha az észlelés sikertelen
         fi
-        sudo dnf install wine wine-mono -y
+        sudo dnf check-update
+        sudo dnf install wine winetricks wine-mono -y
     elif command_exists pacman; then
         # Arch Linux
         echo "Észlelt disztribúció: Arch Linux. Wine telepítése..."
         echo "# Ha a telepítés sikertelen, az utalhat a multilib repo hiányára. Kérjük, győződjön meg róla, hogy engedélyezte a multilibet a /etc/pacman.conf fájlban."
+        sudo pacman -Sy
         sudo pacman -S wine wine-mono wine_gecko -y
     else
         echo "Nem sikerült meghatározni a disztribúciót, vagy nem támogatott. Kérjük, telepítse a Wine-t manuálisan."
@@ -169,23 +171,36 @@ fi
 echo "MesterMC telepítő befejeződött. Indító fájl létrehozása következik."
 
 ## 6. MesterMC indító fájl generálása
+is_kde=false
+
+if [[ "$XDG_CURRENT_DESKTOP" == *KDE* ]] || [[ "$DESKTOP_SESSION" == *plasma* ]]; then
+    is_kde=true
+elif pgrep -x plasmashell >/dev/null || pgrep -x kded5 >/dev/null; then
+    is_kde=true
+fi
+
 echo ""
-while true; do
-    read -p "Milyen indító fájlt szeretne létrehozni? (sh - shell szkript, desktop - asztali indító): " LAUNCHER_CHOICE
-    case "$LAUNCHER_CHOICE" in
-        sh|SH)
-            LAUNCHER_TYPE_CHOSEN="sh"
-            break
-            ;;
-        desktop|DESKTOP)
-            LAUNCHER_TYPE_CHOSEN="desktop"
-            break
-            ;;
-        *)
-            echo "Érvénytelen választás. Kérjük, írjon 'sh' vagy 'desktop'."
-            ;;
-    esac
-done
+if $is_kde; then
+    while true; do
+        read -p "Milyen indító fájlt szeretne létrehozni? (sh - shell szkript, desktop - asztali indító): " LAUNCHER_CHOICE
+        case "$LAUNCHER_CHOICE" in
+            sh|SH)
+                LAUNCHER_TYPE_CHOSEN="sh"
+                break
+                ;;
+            desktop|DESKTOP)
+                LAUNCHER_TYPE_CHOSEN="desktop"
+                break
+                ;;
+            *)
+                echo "Érvénytelen választás. Kérjük, írjon 'sh' vagy 'desktop'."
+                ;;
+        esac
+    done
+else
+    echo "Nem KDE környezet észlelve. Automatikusan sh indító fájl lesz létrehozva."
+    LAUNCHER_TYPE_CHOSEN="sh"
+fi
 
 # A MesterMC.jar telepítési útvonalának meghatározása a Wine előtagon belül
 MESTERMC_DIR_LOCATION_IN_WINE="drive_c/users/$LINUX_USERNAME/AppData/Roaming/MesterMC"

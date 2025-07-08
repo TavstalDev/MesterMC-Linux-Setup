@@ -60,7 +60,7 @@ A szkript futtatása előtt győződjön meg róla, hogy:
 1.  **Szkript letöltése:**
     Nyisson meg egy terminált, és töltse le a szkriptet a GitHubról:
     ```bash
-    wget [https://raw.githubusercontent.com/TavstalDev/MesterMC-Linux-Setup/main/setup_mestermc.sh](https://raw.githubusercontent.com/TavstalDev/MesterMC-Linux-Setup/main/setup_mestermc.sh) -O setup_mestermc.sh
+    wget https://raw.githubusercontent.com/TavstalDev/MesterMC-Linux-Setup/main/setup_mestermc.sh -O setup_mestermc.sh
     ```
 
 2.  **Végrehajthatóvá tétel:**
@@ -79,6 +79,7 @@ A szkript futtatása előtt győződjön meg róla, hogy:
     * A szkript kérni fogja a **`sudo` jelszavát** a Wine és OpenJDK telepítéséhez.
     * Megkérdezi az **opcionális Wine előtag** helyét. Nyomjon Entert az alapértelmezett (~/.wine) használatához, vagy adja meg a kívánt elérési utat (pl. `~/.wine_mestermc`).
     * Letölti és futtatja a PowerShell Wrappert, majd a MesterMC telepítőt. Kövesse a MesterMC telepítőjének lépéseit.
+    * A MesterMC telepítőben ne változtassa meg az alapértelmezett útvonalat.
     * Végül megkérdezi, hogy **shell szkript (.sh)** vagy **asztali indító (.desktop)** fájlt szeretne-e generálni. Válassza a "desktop" opciót a konzolmentes indításhoz és az alkalmazásmenü integrációhoz.
 
 ## Fontos Megjegyzések
@@ -95,20 +96,16 @@ A szkript futtatása előtt győződjön meg róla, hogy:
 
 Íme néhány gyakori probléma és azok lehetséges megoldásai:
 
-* **`sudo` jelszóval kapcsolatos problémák:** Győződjön meg róla, hogy helyes jelszót ad meg, és felhasználója szerepel a `sudoers` csoportban.
+* **`sudo` jelszóval kapcsolatos problémák:** Győződjön meg róla, hogy helyes jelszót ad meg, és felhasználója szerepel a `sudo` csoportban.
 * **Internetkapcsolati hibák:** Ellenőrizze internetkapcsolatát, és próbálja újra a szkriptet.
 * **Wine telepítés sikertelen:**
-    * **Debian/Ubuntu:** Ellenőrizze, hogy a `DISTRO_CODENAME` helyesen lett-e észlelve, és hogy az Ön disztribúciója támogatott-e a WineHQ által. Előfordulhat, hogy a `winehq-archive.key` letöltésekor van probléma, vagy a tároló hozzáadása nem sikerült.
+    * **Debian/Ubuntu:** Ellenőrizze, hogy a `DISTRO_CODENAME` helyesen lett-e észlelve.
     * **Fedora:** Ellenőrizze, hogy a `FEDORA_VERSION` helyes-e.
     * **Arch Linux:** Győződjön meg róla, hogy a `multilib` tároló engedélyezve van a `/etc/pacman.conf` fájlban (távolítsa el a `#` jelet a `[multilib]` és az alatta lévő `Include = /etc/pacman.d/mirrorlist` sorok elől, majd futtasson `sudo pacman -Sy` parancsot).
 * **OpenJDK 21 telepítés sikertelen:** Ellenőrizze, hogy az Ön disztribúciójának csomagkezelőjében (`apt`, `dnf`, `pacman`) elérhető-e az OpenJDK 21. Előfordulhat, hogy frissítenie kell a csomaglistákat (`sudo apt update` / `sudo dnf update` / `sudo pacman -Sy`).
 * **`MesterMC.jar` nem található:**
     * Győződjön meg róla, hogy a MesterMC telepítője sikeresen lefutott, és telepítette a `.jar` fájlt a Wine prefixen belül a `C:\users\<YOUR_LINUX_USERNAME>\AppData\Roaming\MesterMC\` útvonalra.
     * Ellenőrizze, hogy a Wine prefix helyesen lett-e beállítva a szkriptben.
-* **MesterMC nem indul el, vagy hibát jelez:**
-    * Próbálja meg manuálisan elindítani a `MesterMC.jar` fájlt a Wine fájlkezelőjéből (futtassa a `wine explorer` parancsot a terminálban a helyes `WINEPREFIX` beállítása után, majd navigáljon az alkalmazás elérési útjára és kattintson duplán a `.jar` fájlra).
-    * Ellenőrizze a Java telepítését a Wine prefixen belül.
-    * Nézze meg a Wine konzol kimenetét hibákért (futtassa az indítót egy terminálból a `nohup` és `&` nélkül).
 
 ## Hozzájárulás
 

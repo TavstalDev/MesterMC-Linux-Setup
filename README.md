@@ -6,6 +6,7 @@
 
 Ez a Bash szkript célja, hogy leegyszerűsítse a MesterMC játék kliens telepítését és beállítását Linux operációs rendszereken Wine és OpenJDK 21 használatával. Automatikus folyamatot biztosít a függőségek telepítésétől a játékindító fájl generálásáig, beleértve a konzolmentes indítási lehetőséget.
 
+
 ## Tartalomjegyzék
 
 * [Főbb Jellemzők](#főbb-jellemzők)
@@ -17,6 +18,8 @@ Ez a Bash szkript célja, hogy leegyszerűsítse a MesterMC játék kliens telep
 * [Hozzájárulás](#hozzájárulás)
 * [Ismert hibák](#ismert-hibák)
 * [Licenc](#licenc)
+- [Jogi Nyilatkozat](#jogi-nyilatkozat)
+
 
 ## Főbb Jellemzők
 
@@ -29,6 +32,7 @@ Ez a Bash szkript célja, hogy leegyszerűsítse a MesterMC játék kliens telep
     * **Shell szkript (.sh):** Egy egyszerű futtatható szkriptet hoz létre a terminálból történő indításhoz.
     * **Asztali indító (.desktop):** Egy felhasználóbarát asztali parancsikont generál, amely megjelenik az alkalmazásmenüben, és **rejtett konzollal** indítja a MesterMC-t, zökkenőmentes grafikus élményt biztosítva.
 * **Telepítés utáni takarítás:** Eltávolítja a letöltött telepítőfájlokat a rendezett környezet fenntartása érdekében.
+
 
 ## Támogatott Disztribúciók és Tesztelt Környezetek
 
@@ -45,6 +49,7 @@ A szkript a következő Linux disztribúciókon történő Wine és OpenJDK tele
 
 Más disztribúciók esetén a Wine és OpenJDK manuális telepítésére lehet szükség.
 
+
 ## Előfeltételek
 
 A szkript futtatása előtt győződjön meg róla, hogy:
@@ -54,6 +59,7 @@ A szkript futtatása előtt győződjön meg róla, hogy:
 * **`wget` telepítve van:** A legtöbb disztribúción alapból telepítve van, de ha hiányzik, telepítse (pl. `sudo apt install wget` vagy `sudo dnf install wget`).
 * **`lsb_release` telepítve van:** Debian/Ubuntu alapú rendszereken a disztribúció kódnevének észleléséhez szükséges. Ha hiányzik: `sudo apt install lsb-release`.
 * **`grep` telepítve van:** Fedora rendszeren a verzió észleléséhez szükséges.
+
 
 ## Használat
 
@@ -82,6 +88,7 @@ A szkript futtatása előtt győződjön meg róla, hogy:
     * A MesterMC telepítőben ne változtassa meg az alapértelmezett útvonalat.
     * Végül megkérdezi, hogy **shell szkript (.sh)** vagy **asztali indító (.desktop)** fájlt szeretne-e generálni. Válassza a "desktop" opciót a konzolmentes indításhoz és az alkalmazásmenü integrációhoz.
 
+
 ## Fontos Megjegyzések
 
 * **Wine előtag:** A szkript által beállított `WINEPREFIX` környezeti változó kulcsfontosságú. Ha manuálisan szeretné futtatni a MesterMC-t a generált indító nélkül, mindig állítsa be ezt a változót, mielőtt Wine parancsot ad ki (pl. `export WINEPREFIX="/útvonal/a/wineprefixhez"`).
@@ -91,6 +98,7 @@ A szkript futtatása előtt győződjön meg róla, hogy:
     * Ha az indítót áthelyezi az alkalmazások mappájába (`~/.local/share/applications/`), akkor az megjelenik az alkalmazásmenüben. Előfordulhat, hogy újra kell indítania a grafikus felületet, vagy ki kell jelentkeznie/be kell jelentkeznie, hogy azonnal látható legyen.
 * **Arch Linux multilib:** Az Arch Linuxon a Wine telepítéséhez engedélyeznie kell a `multilib` tárolót a `/etc/pacman.conf` fájlban. A szkript figyelmeztetést ad, ha ez a lépés szükséges.
 * **MesterMC telepítő:** A MesterMC telepítője során felbukkanhatnak Windows-os ablakok, amelyeket manuálisan kell kezelnie (pl. "Tovább", "Elfogadom" gombokra kattintás).
+
 
 ## Hibaelhárítás
 
@@ -107,6 +115,7 @@ A szkript futtatása előtt győződjön meg róla, hogy:
     * Győződjön meg róla, hogy a MesterMC telepítője sikeresen lefutott, és telepítette a `.jar` fájlt a Wine prefixen belül a `C:\users\<YOUR_LINUX_USERNAME>\AppData\Roaming\MesterMC\` útvonalra.
     * Ellenőrizze, hogy a Wine prefix helyesen lett-e beállítva a szkriptben.
 
+
 ## Hozzájárulás
 
 Szívesen fogadunk minden hozzájárulást a szkript fejlesztéséhez! Ha hibát talál, vagy javaslata van a javításra, kérjük:
@@ -118,6 +127,8 @@ Szívesen fogadunk minden hozzájárulást a szkript fejlesztéséhez! Ha hibát
 5.  Pusholja a branch-et (`git push origin feature/AmazingFeature`).
 6.  Nyisson egy Pull Request-et.
 
+
+
 ## Ismert hibák
 
 ### 1. Első indítás után a launcher bezáródik
@@ -125,6 +136,14 @@ Szívesen fogadunk minden hozzájárulást a szkript fejlesztéséhez! Ha hibát
 - **Átmeneti megoldás:** Indítsd el újra a launchert. A második indítás után a működés normális, és a Minecraft is sikeresen betölt.
 - **Megjegyzés:** A hiba oka egyelőre ismeretlen, de valószínűleg valamilyen kompatibilitási problémára vezethető vissza.
 
+
+
 ## Licenc
 
 Ez a projekt az MIT Licenc alatt van kiadva. Részletekért lásd a [LICENSE](LICENSE) fájlt.
+
+
+
+## Jogi nyilatkozat
+
+Ez a szkript független közösségi fejlesztés, és **nem áll kapcsolatban a MesterMC-vel, annak fejlesztőivel vagy üzemeltetőivel.** A MesterMC egy harmadik féltől származó szoftver, saját felhasználási feltételekkel. Kérdéseivel vagy problémáival forduljon közvetlenül a MesterMC hivatalos támogatásához.

@@ -228,8 +228,6 @@ print_header "MesterMC Indító Fájl Generálása"
 # A szkript lehetőséget biztosít egy shell szkript (.sh) vagy egy asztali indító (.desktop) létrehozására.
 # KDE környezetben kérdezi a felhasználót, egyébként alapértelmezetten shell szkriptet hoz létre.
 
-is_kde=false
-# Különböző módszerek a KDE környezet észlelésére.
 if [[ "$XDG_CURRENT_DESKTOP" == *KDE* ]] || [[ "$DESKTOP_SESSION" == *plasma* ]]; then
     is_kde=true
 elif pgrep -x plasmashell >/dev/null || pgrep -x kded5 >/dev/null; then

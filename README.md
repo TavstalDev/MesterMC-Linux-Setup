@@ -15,6 +15,7 @@ Ez a Bash szkript célja, hogy leegyszerűsítse a MesterMC játék kliens telep
 * [Fontos Megjegyzések](#fontos-megjegyzések)
 * [Hibaelhárítás](#hibaelhárítás)
 * [Hozzájárulás](#hozzájárulás)
+* [Ismert hibák](#ismert-hibák)
 * [Licenc](#licenc)
 
 ## Főbb Jellemzők
@@ -34,12 +35,13 @@ Ez a Bash szkript célja, hogy leegyszerűsítse a MesterMC játék kliens telep
 A szkript a következő Linux disztribúciókon történő Wine és OpenJDK telepítést támogatja, és az alábbi környezetekben került tesztelésre:
 
 * **Arch Linux**
-   * *KDE Desktop (Tesztelt)*
+   * *KDE Desktop 2025.07.01 (Tesztelt)*
 * **Fedora Linux**
-   * *KDE Desktop (Tesztelt)*
+   * *KDE Desktop 42-1.1 (Tesztelt)*
+        * Telepítés után automatikusan frissítettem a `sudo dnf upgrade` parancssal
 * **Debian/Ubuntu**
-    * *Ubuntu Desktop (Fejlesztés alatt)*
-    * *Linux Mint Cinnamon (Fejlesztés alatt)*
+    * *Ubuntu Desktop 12.11.0 (Tesztelt)*
+    * *Linux Mint Cinnamon 22.1 (Tesztelt)*
 
 Más disztribúciók esetén a Wine és OpenJDK manuális telepítésére lehet szükség.
 
@@ -118,6 +120,13 @@ Szívesen fogadunk minden hozzájárulást a szkript fejlesztéséhez! Ha hibát
 4.  Commitolja a változtatásait (`git commit -m 'Add some AmazingFeature'`).
 5.  Pusholja a branch-et (`git push origin feature/AmazingFeature`).
 6.  Nyisson egy Pull Request-et.
+
+## Ismert hibák
+
+### 1. Első indítás után a launcher bezáródik
+- **Leírás:** A launcher telepítése és elindítása után, a bejelentkezést követően hosszú ideig tölt, majd váratlanul bezáródik.
+- **Átmeneti megoldás:** Indítsd el újra a launchert. A második indítás után a működés normális, és a Minecraft is sikeresen betölt.
+- **Megjegyzés:** A hiba oka egyelőre ismeretlen, de valószínűleg valamilyen kompatibilitási problémára vezethető vissza.
 
 ## Licenc
 

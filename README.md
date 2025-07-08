@@ -18,7 +18,7 @@ Ez a Bash szkript célja, hogy leegyszerűsítse a MesterMC játék kliens telep
 * [Hozzájárulás](#hozzájárulás)
 * [Ismert hibák](#ismert-hibák)
 * [Licenc](#licenc)
-- [Jogi Nyilatkozat](#jogi-nyilatkozat)
+* [Jogi Nyilatkozat](#jogi-nyilatkozat)
 
 
 ## Főbb Jellemzők

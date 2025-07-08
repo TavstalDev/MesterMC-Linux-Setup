@@ -9,7 +9,7 @@ Ez a Bash szkript célja, hogy leegyszerűsítse a MesterMC játék kliens telep
 ## Tartalomjegyzék
 
 * [Főbb Jellemzők](#főbb-jellemzők)
-* [Támogatott Disztribúciók](#támogatott-disztribúciók)
+* [Támogatott Disztribúciók és Tesztelt Környezetek](#támogatott-disztribúciók-és-tesztelt-környezetek)
 * [Előfeltételek](#előfeltételek)
 * [Használat](#használat)
 * [Fontos Megjegyzések](#fontos-megjegyzések)
@@ -29,13 +29,17 @@ Ez a Bash szkript célja, hogy leegyszerűsítse a MesterMC játék kliens telep
     * **Asztali indító (.desktop):** Egy felhasználóbarát asztali parancsikont generál, amely megjelenik az alkalmazásmenüben, és **rejtett konzollal** indítja a MesterMC-t, zökkenőmentes grafikus élményt biztosítva.
 * **Telepítés utáni takarítás:** Eltávolítja a letöltött telepítőfájlokat a rendezett környezet fenntartása érdekében.
 
-## Támogatott Disztribúciók
+## Támogatott Disztribúciók és Tesztelt Környezetek
 
-A szkript a következő Linux disztribúciókon történő Wine és OpenJDK telepítést támogatja:
+A szkript a következő Linux disztribúciókon történő Wine és OpenJDK telepítést támogatja, és az alábbi környezetekben került tesztelésre:
 
-* **Debian/Ubuntu** (és származékai, pl. Linux Mint, Pop!\_OS)
-* **Fedora**
-* **Arch Linux** (és származékai, pl. Manjaro)
+* **Arch Linux**
+   * *KDE Desktop (Tesztelt)*
+* **Fedora Linux**
+   * *KDE Desktop (Tesztelt)*
+* **Debian/Ubuntu**
+    * *Ubuntu Desktop (Fejlesztés alatt)*
+    * *Linux Mint Cinnamon (Fejlesztés alatt)*
 
 Más disztribúciók esetén a Wine és OpenJDK manuális telepítésére lehet szükség.
 

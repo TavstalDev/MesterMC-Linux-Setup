@@ -228,6 +228,7 @@ print_header "MesterMC Indító Fájl Generálása"
 # A szkript lehetőséget biztosít egy shell szkript (.sh) vagy egy asztali indító (.desktop) létrehozására.
 # KDE környezetben kérdezi a felhasználót, egyébként alapértelmezetten shell szkriptet hoz létre.
 
+is_kde=false
 if [[ "$XDG_CURRENT_DESKTOP" == *KDE* ]] || [[ "$DESKTOP_SESSION" == *plasma* ]]; then
     is_kde=true
 elif pgrep -x plasmashell >/dev/null || pgrep -x kded5 >/dev/null; then
@@ -317,7 +318,7 @@ elif [ $LAUNCHER_TYPE_CHOSEN == "desktop" ]; then
     GENERATED_LAUNCHER_FILE="$LAUNCHER_DESKTOP_NAME"
     echo "MesterMC asztali indító fájl generálása: $LAUNCHER_DESKTOP_NAME"
 
-    cat <<EOF > "$LAUNCHER_DESKTOP_NAME"
+cat <<EOF > "$LAUNCHER_DESKTOP_NAME"
 [Desktop Entry]
 Name=MesterMC
 Comment=Játssz MesterMC-t Wine-on keresztül

@@ -266,8 +266,7 @@ MESTERMC_DIR_FULL_PATH="$SELECTED_WINE_PREFIX/$MESTERMC_DIR_LOCATION_IN_WINE"
 MESTERMC_JAR_FULL_PATH="$MESTERMC_DIR_FULL_PATH/MesterMC.jar"
 
 # Az ikon útvonala a Wine előtagon belül.
-ICON_LOCATION_IN_WINE="drive_c/users/$LINUX_USERNAME/AppData/Roaming/MesterMC/icon.ico"
-ICON_FULL_PATH="$SELECTED_WINE_PREFIX/$ICON_LOCATION_IN_WINE"
+ICON_FULL_PATH="$MESTERMC_DIR_FULL_PATH/icon.ico"
 
 # Ellenőrizzük, hogy a MesterMC.jar fájl létezik-e a várt helyen.
 if [ ! -f "$MESTERMC_JAR_FULL_PATH" ]; then
@@ -277,13 +276,13 @@ if [ ! -f "$MESTERMC_JAR_FULL_PATH" ]; then
     exit 1
 fi
 
-if [ "$LAUNCHER_TYPE_CHOSEN" == "sh" ]; then
+if [ $LAUNCHER_TYPE_CHOSEN == "sh" ]; then
     # Shell szkript generálása (.sh fájl)
     LAUNCHER_SCRIPT_NAME="launch_mestermc.sh"
     GENERATED_LAUNCHER_FILE="$LAUNCHER_SCRIPT_NAME"
     echo "MesterMC indító szkript generálása: $LAUNCHER_SCRIPT_NAME"
 
-    cat <<EOF > "$LAUNCHER_SCRIPT_NAME"
+cat <<EOF > "$LAUNCHER_SCRIPT_NAME"
 #!/bin/bash
 set -e # Azonnali leállás, ha bármely parancs hibával tér vissza
 #
@@ -293,37 +292,28 @@ set -e # Azonnali leállás, ha bármely parancs hibával tér vissza
 # Használat: Futtassa a terminálból a következő paranccsal: ./launch_mestermc.sh
 #
 
-# Állítsa be a telepítés során használt Wine előtagot. Ez elengedhetetlen!
-export WINEPREFIX="$SELECTED_WINE_PREFIX"
-
-# A MesterMC.jar teljes útvonalának meghatározása a Wine előtagon belül.
-# Ez az útvonal a MesterMC általános telepítési viselkedésén alapul.
-MESTERMC_JAR_FULL_PATH_IN_LAUNCHER="\$WINEPREFIX/drive_c/users/$LINUX_USERNAME/AppData/Roaming/MesterMC/MesterMC.jar"
-JAR_DIR_IN_LAUNCHER="\$(dirname "\$MESTERMC_JAR_FULL_PATH_IN_LAUNCHER")"
-
-echo "MesterMC indítása a következő Wine előtaggal: \$WINEPREFIX"
+echo "MesterMC indítása a következő Wine előtaggal: $SELECTED_WINE_PREFIX"
 
 # Győződjön meg róla, hogy a .jar fájl létezik, mielőtt megpróbálná futtatni.
-if [ ! -f "\$MESTERMC_JAR_FULL_PATH_IN_LAUNCHER" ]; then
-    echo "Hiba: A MesterMC.jar nem található a következő helyen: \$MESTERMC_JAR_FULL_PATH_IN_LAUNCHER."
+if [ ! -f "$MESTERMC_JAR_FULL_PATH" ]; then
+    echo "Hiba: A MesterMC.jar nem található a következő helyen: $MESTERMC_JAR_FULL_PATH."
     echo "Kérjük, győződjön meg róla, hogy a MesterMC helyesen lett telepítve a Wine előtagon belül."
     exit 1
 fi
 
 # Váltson arra a könyvtárra, ahol a .jar található, mielőtt végrehajtaná.
 # Ez néha megakadályozhatja a Java alkalmazáson belüli relatív útvonalakkal kapcsolatos problémákat.
-cd "\$JAR_DIR_IN_LAUNCHER" || { echo "Hiba: Nem sikerült a könyvtárra váltani: \$JAR_DIR_IN_LAUNCHER"; exit 1; }
+cd $MESTERMC_DIR_FULL_PATH || { echo "Hiba: Nem sikerült a könyvtárra váltani: $MESTERMC_DIR_FULL_PATH"; exit 1; }
 
-# MesterMC.jar futtatása Java segítségével.
-# A 'java -jar' paranccsal futtatunk egy JAR fájlt.
-java -jar "\$MESTERMC_JAR_FULL_PATH_IN_LAUNCHER"
+# MesterMC.jar futtatása Java segítségével
+java -jar $MESTERMC_JAR_FULL_PATH
 EOF
 
     chmod +x "$LAUNCHER_SCRIPT_NAME" # Futtatási engedélyek hozzáadása
     echo "A **MesterMC** indító szkript '**$LAUNCHER_SCRIPT_NAME**' sikeresen létrejött!"
     echo "Most már futtathatja a **MesterMC**-t a terminálból a következő paranccsal: **./$LAUNCHER_SCRIPT_NAME**"
 
-elif [ "$LAUNCHER_TYPE_CHOSEN" == "desktop" ]; then
+elif [ $LAUNCHER_TYPE_CHOSEN == "desktop" ]; then
     # Asztali indító fájl generálása (.desktop fájl)
     LAUNCHER_DESKTOP_NAME="MesterMC.desktop"
     GENERATED_LAUNCHER_FILE="$LAUNCHER_DESKTOP_NAME"
@@ -333,7 +323,7 @@ elif [ "$LAUNCHER_TYPE_CHOSEN" == "desktop" ]; then
 [Desktop Entry]
 Name=MesterMC
 Comment=Játssz MesterMC-t Wine-on keresztül
-Exec=env WINEPREFIX="$SELECTED_WINE_PREFIX" /usr/bin/java -jar "$MESTERMC_JAR_FULL_PATH"
+Exec=cd $MESTERMC_DIR_FULL_PATH && nohup java -jar $MESTERMC_JAR_FULL_PATH > /dev/null 2>&1 &
 Icon=$ICON_FULL_PATH
 Terminal=false
 Type=Application

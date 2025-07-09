@@ -8,7 +8,7 @@ set -e # Azonnali leállás, ha bármely parancs hibával tér vissza
 #          valamint létrehoz egy indító fájlt (shell szkript vagy asztali indító) a MesterMC könnyű eléréséhez.
 # Szerző: [Solymosi 'Tavstal' Zoltán]
 # Dátum: 2025. július 9.
-# Verzió: 1.0.0
+# Verzió: 1.0.1
 # 
 
 # --- Fontos Megjegyzés ---
@@ -67,7 +67,7 @@ SELECTED_WINE_PREFIX="" # Globálissá téve a későbbi használathoz.
 print_header "A Munkakönyvtár Ellenőrzése és Beállítása"
 
 WORKING_DIR="MMC_Installer_Data"
-# Check if the directory exists
+# A munkakönyvtár létezésének ellenőrzése
 if [ ! -d "$WORKING_DIR" ]; then
     echo "A '$WORKING_DIR' könyvtár nem létezik. Létrehozás..."
     mkdir -p "$WORKING_DIR"
@@ -79,8 +79,37 @@ if [ ! -d "$WORKING_DIR" ]; then
     fi
 fi
 
-# Change to the working directory
+# Belépés a munkakönyvtárba
 cd "$WORKING_DIR" || { echo "Hiba: Nem sikerült átváltani a könyvtárba: '$WORKING_DIR'."; exit 1; }
+
+# A felhasználó asztali útvonalára azért van szükség, hogy az onnan automatikusan generált fájlokat törölni tudjuk.
+print_header "A Felhasználó Asztalának Felderítése"
+DESKTOP_PATH=""
+
+# Ellenőrizzük, hogy az xdg-user-dir parancs létezik-e
+if command -v xdg-user-dir &> /dev/null; then
+    DESKTOP_PATH=$(xdg-user-dir DESKTOP)
+    if [ -z "$DESKTOP_PATH" ]; then
+        echo "Figyelem: az xdg-user-dir üres útvonalat adott vissza az ASZTAL-hoz. Visszaállás az alapértelmezettre."
+        DESKTOP_PATH="$HOME/Desktop"
+    fi
+else
+    echo "Figyelem: az xdg-user-dir nem található. Visszaállás az alapértelmezett '~/.config/user-dirs.dirs' fájlra."
+    # Visszaállítási módszer, ha az xdg-user-dir nincs telepítve
+    # Ez közvetlenül beolvassa a konfigurációs fájlt
+    if [ -f "$HOME/.config/user-dirs.dirs" ]; then
+        # Grep, cut és sed használatával kivesszük az ASZTAL útvonalát a szabványos formátumból
+        # Ez a realpath-szal kombinálva kezeli a ~ kiterjesztését és a szimbolikus linkeket
+        DESKTOP_PATH=$(grep 'XDG_DESKTOP_DIR' "$HOME/.config/user-dirs.dirs" | cut -d'=' -f2 | sed 's/"//g' | sed 's/\$HOME/\~/' | xargs realpath --relative-to="$HOME" -q --no-symlinks)
+    fi
+
+    # Végső visszaállítás, ha minden más kudarcot vall (pl. nincs konfig fájl, vagy elemzési hiba)
+    if [ -z "$DESKTOP_PATH" ] || [ ! -d "$DESKTOP_PATH" ]; then
+        echo "Nem sikerült megbízhatóan meghatározni az asztali mappa elérési útját. Alapértelmezés: '$HOME/Desktop'."
+        DESKTOP_PATH="$HOME/Desktop"
+    fi
+fi
+echo "A felhasználó asztali mappája: $DESKTOP_PATH"
 
 print_header "Wine Telepítés Ellenőrzése és Beállítása"
 
@@ -247,8 +276,8 @@ wine "$MESTERMC_INSTALLER_FILENAME" &> log.txt
 
 # Eltávolítjuk az esetlegesen generált MesterMC.desktop fájlt a jelenlegi könyvtárból, ha a telepítő létrehozta.
 # Tesztelésem során sose működött.
-if [ -f "MesterMC.desktop" ]; then
-    rm -f "MesterMC.desktop"
+if [ -f "${DESKTOP_PATH}/MesterMC.desktop" ]; then
+    rm -f "${DESKTOP_PATH}/MesterMC.desktop"
     echo "A MesterMC.desktop ideiglenes fájl eltávolítva."
 fi
 echo "MesterMC telepítő befejeződött. Most jön az indító fájl generálása."
@@ -297,6 +326,7 @@ MESTERMC_JAR_FULL_PATH="$MESTERMC_DIR_FULL_PATH/MesterMC.jar"
 
 # Az ikon útvonala a Wine előtagon belül.
 ICON_FULL_PATH="$MESTERMC_DIR_FULL_PATH/icon.ico"
+LAUNCHER_DIR_PATH="$(pwd)/"
 
 # Ellenőrizzük, hogy a MesterMC.jar fájl létezik-e a várt helyen.
 if [ ! -f "$MESTERMC_JAR_FULL_PATH" ]; then
@@ -369,6 +399,7 @@ EOF
         mkdir -p "$HOME/.local/share/applications" # Létrehozza a szükséges könyvtárat, ha még nincs.
         mv "$LAUNCHER_DESKTOP_NAME" "$HOME/.local/share/applications/"
         GENERATED_LAUNCHER_FILE="$HOME/.local/share/applications/$LAUNCHER_DESKTOP_NAME" # Frissítjük az útvonalat a takarításhoz, ha később szükség van rá.
+        LAUNCHER_DIR_PATH=""
         echo "Az indító fájl áthelyezve ide: **$HOME/.local/share/applications/**"
         echo "Lehet, hogy újra kell indítania a grafikus felületet, vagy ki-be kell jelentkeznie, hogy megjelenjen az alkalmazásmenüben."
     else
@@ -397,8 +428,8 @@ if [ -f "$MESTERMC_INSTALLER_FILENAME" ]; then
 fi
 
 # A telepítő által esetlegesen generált Windows parancsikonok eltávolítása.
-if [ -f "MesterMC.lnk" ]; then
-    rm -f "MesterMC.lnk"
+if [ -f "${DESKTOP_PATH}/MesterMC.lnk" ]; then
+    rm -f "${DESKTOP_PATH}/MesterMC.lnk"
     echo "MesterMC.lnk eltávolítva."
 fi
 
@@ -406,4 +437,4 @@ echo "A takarítás befejeződött."
 echo ""
 echo "Köszönjük, hogy használta a szkriptet a MesterMC telepítéséhez!"
 echo "Ha bármilyen problémába ütközik, kérjük, ellenőrizze a hibaüzeneteket és a Wine/Java telepítését."
-echo "Az indító fájlt itt találod meg: $GENERATED_LAUNCHER_FILE"
+echo "Az indító fájlt itt találod meg: $LAUNCHER_DIR_PATH$GENERATED_LAUNCHER_FILE"

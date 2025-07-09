@@ -64,6 +64,24 @@ SELECTED_WINE_PREFIX="" # Globálissá téve a későbbi használathoz.
 
 # --- Fő Szkript Logika ---
 
+print_header "A Munkakönyvtár Ellenőrzése és Beállítása"
+
+WORKING_DIR="MMC_Installer_Data"
+# Check if the directory exists
+if [ ! -d "$WORKING_DIR" ]; then
+    echo "A '$WORKING_DIR' könyvtár nem létezik. Létrehozás..."
+    mkdir -p "$WORKING_DIR"
+    if [ $? -eq 0 ]; then
+        echo "A'$WORKING_DIR' könyvtár sikeresen létrehozva."
+    else
+        echo "Hiba: Nem sikerült létrehozni a könyvtárat: '$WORKING_DIR'."
+        exit 1
+    fi
+fi
+
+# Change to the working directory
+cd "$WORKING_DIR" || { echo "Hiba: Nem sikerült átváltani a könyvtárba: '$WORKING_DIR'."; exit 1; }
+
 print_header "Wine Telepítés Ellenőrzése és Beállítása"
 
 # 1. Wine ellenőrzése és telepítése
@@ -199,10 +217,10 @@ else
 fi
 
 echo "PowerShell Wrapper telepítő futtatása Wine segítségével. Kérjük, kövesse az esetleges utasításokat..."
-WINEDEBUG=+err wine "$WRAPPER_INSTALLER"
+wine "$WRAPPER_INSTALLER" &> log.txt
 
 echo "Ellenőrizzük, hogy a PowerShell Wrapper sikeresen települt-e..."
-if WINEDEBUG=+err wine powershell -noni -c 'echo "PowerShell Wrapper sikeresen telepítve!"'; then
+if wine powershell -noni -c 'echo "PowerShell Wrapper sikeresen telepítve!"' &> log.txt; then
     echo "PowerShell Wrapper sikeresen telepítve és működik."
 else
     echo "Figyelem: A PowerShell Wrapper telepítése vagy működése problémákba ütközött. Ez hatással lehet a MesterMC bizonyos funkcióira."
@@ -225,9 +243,10 @@ fi
 echo "MesterMC.exe telepítő futtatása Wine segítségével."
 echo "Kérjük, kövesse a telepítő ablakában megjelenő utasításokat."
 echo "Fontos: A telepítés során válassza ki a 'Minden felhasználó' telepítési lehetőséget, ha van ilyen, vagy hagyja az alapértelmezett telepítési útvonalat."
-WINEDEBUG=+err wine "$MESTERMC_INSTALLER_FILENAME"
+wine "$MESTERMC_INSTALLER_FILENAME" &> log.txt
 
 # Eltávolítjuk az esetlegesen generált MesterMC.desktop fájlt a jelenlegi könyvtárból, ha a telepítő létrehozta.
+# Tesztelésem során sose működött.
 if [ -f "MesterMC.desktop" ]; then
     rm -f "MesterMC.desktop"
     echo "A MesterMC.desktop ideiglenes fájl eltávolítva."
@@ -387,3 +406,4 @@ echo "A takarítás befejeződött."
 echo ""
 echo "Köszönjük, hogy használta a szkriptet a MesterMC telepítéséhez!"
 echo "Ha bármilyen problémába ütközik, kérjük, ellenőrizze a hibaüzeneteket és a Wine/Java telepítését."
+echo "Az indító fájlt itt találod meg: $GENERATED_LAUNCHER_FILE"

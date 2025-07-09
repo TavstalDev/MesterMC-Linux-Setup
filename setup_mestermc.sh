@@ -2,13 +2,13 @@
 set -e # Azonnali leállás, ha bármely parancs hibával tér vissza
 
 # --- Szkript Metaadatok ---
-# Fájlnév: mestermc_telepito.sh
+# Fájlnév: setup_mestermc.sh
 # Leírás: Ez a szkript automatizálja a MesterMC telepítését és beállítását Linux rendszeren Wine segítségével.
 #          Ellenőrzi és telepíti a szükséges függőségeket (Wine, OpenJDK 21), letölti és futtatja a MesterMC telepítőt,
 #          valamint létrehoz egy indító fájlt (shell szkript vagy asztali indító) a MesterMC könnyű eléréséhez.
 # Szerző: [Solymosi 'Tavstal' Zoltán]
-# Dátum: 2025. július 8.
-# Verzió: 1.0
+# Dátum: 2025. július 9.
+# Verzió: 1.0.0
 # 
 
 # --- Fontos Megjegyzés ---
@@ -31,6 +31,22 @@ print_header() {
     echo ""
     echo "--- $1 ---"
 }
+
+# --- Statikus Változók ---
+
+# JDK
+JDK_DEBIAN_DOWNLOAD_URL="https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.deb"
+JDK_DEBIAN_FILENAME="jdk-21_linux-x64_bin.deb"
+JDK_FEDORA_DOWNLOAD_URL="https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.rpm"
+JDK_FEDORA_FILENAME="jdk-21_linux-x64_bin.rpm"
+
+# PowerShell Wrapper
+WRAPPER_INSTALLER="install_pwshwrapper.exe"
+WRAPPER_DOWNLOAD_URL="https://github.com/PietJankbal/powershell-wrapper-for-wine/raw/master/install_pwshwrapper.exe"
+
+# MesterMC
+MESTERMC_INSTALLER_URL="https://mestermc.eu/mestermc.exe"
+MESTERMC_INSTALLER_FILENAME="MesterMC.exe"
 
 # --- Változók Inicializálása ---
 
@@ -107,14 +123,14 @@ if command_exists java; then
             sudo apt update
             # Az Oracle JDK közvetlen letöltése és telepítése, mivel az OpenJDK 21 nem mindig érhető el azonnal a tárolókban.
             # Alternatívaként használhatja az 'apt install openjdk-21-jdk -y' parancsot, ha elérhető.
-            wget https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.deb -O jdk-21_linux-x64_bin.deb
-            sudo dpkg -i jdk-21_linux-x64_bin.deb
-            rm -f jdk-21_linux-x64_bin.deb # A letöltött .deb fájl törlése
+            wget $JDK_DEBIAN_DOWNLOAD_URL -O $JDK_DEBIAN_FILENAME
+            sudo dpkg -i $JDK_DEBIAN_FILENAME
+            rm -f $JDK_DEBIAN_FILENAME # A letöltött .deb fájl törlése
         elif command_exists dnf; then
             echo "Észlelt disztribúció: Fedora. OpenJDK 21 telepítése..."
-            wget https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.rpm -O jdk-21_linux-x64_bin.rpm
-            sudo dnf install jdk-21_linux-x64_bin.rpm -y
-            rm -f jdk-21_linux-x64_bin.rpm # A letöltött .rpm fájl törlése
+            wget $JDK_FEDORA_DOWNLOAD_URL -O $JDK_FEDORA_FILENAME
+            sudo dnf install $JDK_FEDORA_FILENAME -y
+            rm -f $JDK_FEDORA_FILENAME # A letöltött .rpm fájl törlése
         elif command_exists pacman; then
             echo "Észlelt disztribúció: Arch Linux. OpenJDK 21 telepítése..."
             sudo pacman -S jdk21-openjdk -y
@@ -130,14 +146,14 @@ else
     if command_exists apt-get; then
         echo "Észlelt disztribúció: Debian/Ubuntu. OpenJDK 21 telepítése..."
         sudo apt update
-        wget https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.deb -O jdk-21_linux-x64_bin.deb
-        sudo dpkg -i jdk-21_linux-x64_bin.deb
-        rm -f jdk-21_linux-x64_bin.deb
+        wget $JDK_DEBIAN_DOWNLOAD_URL -O $JDK_DEBIAN_FILENAME
+        sudo dpkg -i $JDK_DEBIAN_FILENAME
+        rm -f $JDK_DEBIAN_FILENAME
     elif command_exists dnf; then
         echo "Észlelt disztribúció: Fedora. OpenJDK 21 telepítése..."
-        wget https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.rpm -O jdk-21_linux-x64_bin.rpm
-        sudo dnf install jdk-21_linux-x64_bin.rpm -y
-        rm -f jdk-21_linux-x64_bin.rpm # A letöltött .rpm fájl törlése
+        wget $JDK_FEDORA_DOWNLOAD_URL -O $JDK_FEDORA_FILENAME
+        sudo dnf install $JDK_FEDORA_FILENAME -y
+        rm -f $JDK_FEDORA_FILENAME # A letöltött .rpm fájl törlése
     elif command_exists pacman; then
         echo "Észlelt disztribúció: Arch Linux. OpenJDK 21 telepítése..."
         sudo pacman -S jdk21-openjdk -y
@@ -171,10 +187,9 @@ print_header "PowerShell Wrapper Telepítése"
 # 4. PowerShell Wrapper telepítése
 # A PowerShell Wrapper segít abban, hogy a PowerShell szkriptek is megfelelően fussanak Wine alatt.
 # A MesterMC telepítője (és esetleg maga a játék) is használhat PowerShellt.
-WRAPPER_INSTALLER="install_pwshwrapper.exe"
 if [ ! -f "$WRAPPER_INSTALLER" ]; then
     echo "PowerShell Wrapper telepítő letöltése a GitHub-ról..."
-    wget https://github.com/PietJankbal/powershell-wrapper-for-wine/raw/master/install_pwshwrapper.exe -O "$WRAPPER_INSTALLER"
+    wget $WRAPPER_DOWNLOAD_URL -O "$WRAPPER_INSTALLER"
     if [ $? -ne 0 ]; then
         echo "Hiba: Nem sikerült letölteni a PowerShell Wrapper telepítőt. Kérjük, ellenőrizze az internetkapcsolatot."
         exit 1
@@ -196,9 +211,6 @@ fi
 print_header "MesterMC Telepítő Letöltése és Indítása"
 
 # 5. MesterMC telepítő letöltése és futtatása
-MESTERMC_INSTALLER_URL="https://mestermc.eu/mestermc.exe"
-MESTERMC_INSTALLER_FILENAME="MesterMC.exe"
-
 if [ ! -f "$MESTERMC_INSTALLER_FILENAME" ]; then
     echo "MesterMC telepítő letöltése a(z) $MESTERMC_INSTALLER_URL címről..."
     wget -O "$MESTERMC_INSTALLER_FILENAME" "$MESTERMC_INSTALLER_URL"
@@ -366,11 +378,6 @@ if [ -f "$MESTERMC_INSTALLER_FILENAME" ]; then
 fi
 
 # A telepítő által esetlegesen generált Windows parancsikonok eltávolítása.
-if [ -f "MesterMC.ink" ]; then
-    rm -f "MesterMC.ink"
-    echo "MesterMC.ink eltávolítva."
-fi
-
 if [ -f "MesterMC.lnk" ]; then
     rm -f "MesterMC.lnk"
     echo "MesterMC.lnk eltávolítva."
